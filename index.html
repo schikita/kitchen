@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Кухня шеф-повара — Мини-игра</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <section class="game-section">
+    <div class="game-container">
+      <!-- Экран выбора рецепта -->
+      <div class="recipe-select-screen" id="recipeScreen">
+        <h1 class="game-title">🍳 Кухня шеф-повара</h1>
+        <p class="game-subtitle">Выбери блюдо и приготовь его шаг за шагом</p>
+        <div class="recipe-cards">
+          <div class="recipe-card" data-recipe="omelet">
+            <span class="icon">
+              <img class="sprite recipe-card-image" src="assets/sprites/card-omelet.png" alt="Омлет">
+            </span>
+            <h3>Омлет</h3>
+            <p>Взбить яйца, жарить, перевернуть</p>
+          </div>
+          <div class="recipe-card" data-recipe="pizza">
+            <span class="icon">
+              <img class="sprite recipe-card-image" src="assets/sprites/card-pizza.png" alt="Пицца">
+            </span>
+            <h3>Пицца</h3>
+            <p>Тесто, соус, начинка, выпечка</p>
+          </div>
+          <div class="recipe-card" data-recipe="salad">
+            <span class="icon">
+              <img class="sprite recipe-card-image" src="assets/sprites/card-salad.png" alt="Салат">
+            </span>
+            <h3>Салат</h3>
+            <p>Нарезать овощи, смешать</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Кухня — игровой процесс -->
+      <div class="kitchen-view" id="kitchenView">
+        <div class="kitchen-header">
+          <span class="recipe-name-display" id="recipeNameDisplay"></span>
+          <div class="step-indicator" id="stepIndicator"></div>
+          <button class="back-btn" id="backBtn">← Назад</button>
+        </div>
+        <div class="kitchen-workspace">
+          <div class="tool-panel" id="toolPanel"></div>
+          <p class="step-instruction" id="stepInstruction"></p>
+          <div class="minigame-area" id="minigameArea"></div>
+          <div class="hand-overlay" id="handOverlay"></div>
+        </div>
+      </div>
+
+      <!-- Экран победы -->
+      <div class="victory-screen" id="victoryScreen">
+        <div class="victory-emoji">⭐</div>
+        <h2 class="victory-title">Отлично приготовлено!</h2>
+        <div class="victory-stars">
+          <img src="assets/sprites/star-full.png" alt="Звезда" class="sprite">
+          <img src="assets/sprites/star-full.png" alt="Звезда" class="sprite">
+          <img src="assets/sprites/star-full.png" alt="Звезда" class="sprite">
+        </div>
+        <p>Ты настоящий шеф-повар!</p>
+        <div class="victory-dish" id="victoryDish"></div>
+        <button class="play-again-btn" id="playAgainBtn">Приготовить ещё</button>
+      </div>
+    </div>
+  </section>
+
+  <script src="assets/js/game.js"></script>
+</body>
+</html>
