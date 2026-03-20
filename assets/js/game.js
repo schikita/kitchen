@@ -1,8 +1,29 @@
 const SPRITES_BASE_PATH = 'assets/sprites/';
 
+/** Сброс всех отложенных колбэков при смене экрана / выходе (иначе срабатывают «призраки»). */
+const gameTimers = new Set();
+function scheduleGame(fn, ms) {
+  const id = setTimeout(() => {
+    gameTimers.delete(id);
+    fn();
+  }, ms);
+  gameTimers.add(id);
+  return id;
+}
+function clearGameTimer(id) {
+  if (id != null) {
+    clearTimeout(id);
+    gameTimers.delete(id);
+  }
+}
+function clearAllGameTimers() {
+  gameTimers.forEach((id) => clearTimeout(id));
+  gameTimers.clear();
+}
+
 function spriteImg(name, alt = '') {
   if (!name) return '';
-  return `<img class="sprite sprite-${name}" src="${SPRITES_BASE_PATH}${name}.png" alt="${alt}">`;
+  return `<img class="sprite sprite-${name}" src="${SPRITES_BASE_PATH}${name}.png" alt="${alt}" loading="lazy">`;
 }
 
 function ingredientVisual(step) {
@@ -40,10 +61,11 @@ const RECIPES = {
       },
       {
         type: 'flip',
-        instruction: 'Переверни омлет! Нажми кнопку в нужный момент.',
+        instruction: 'Переверни омлет 3 раза! Нажми кнопку в нужный момент.',
         ingredient: 'Омлет',
         sprite: 'omelet-cooked',
-        flipTiming: true
+        flipTiming: true,
+        flips: 3
       },
       { type: 'done', instruction: 'Готово! Омлет идеален! 🧑‍🍳' }
     ]
@@ -61,13 +83,13 @@ const RECIPES = {
       },
       {
         type: 'spread',
-        instruction: 'Раскатай тесто и добавь соус. Нажимай на основу!',
+        instruction: 'Раскатай тесто и добавь соус. Выбери лопатку и нажимай на основу!',
         ingredient: 'Основа',
         sprite: 'dough-rolled'
       },
       {
         type: 'toppings',
-        instruction: 'Добавь начинку на пиццу!',
+        instruction: 'Добавь начинку лопаткой — нажми кнопки ниже!',
         toppings: ['cheese', 'mushroom', 'olive', 'basil']
       },
       { type: 'done', instruction: 'Пицца готова к выпечке! 🍕' }
@@ -108,8 +130,27 @@ let currentStep = 0;
 let chopCount = 0;
 let stirCount = 0;
 let flipReady = false;
-let flipTimeout = null;
+let flipFailTimer = null;
+let doneVictoryTimer = null;
 let currentTool = null;
+
+const TOPPING_LABELS = {
+  cheese: 'сыр',
+  mushroom: 'грибы',
+  olive: 'оливки',
+  basil: 'базилик'
+};
+
+function flashNeedTool() {
+  toolPanel?.classList.add('need-tool');
+  scheduleGame(() => toolPanel?.classList.remove('need-tool'), 450);
+}
+
+function resetToolsSelection() {
+  currentTool = null;
+  toolPanel?.querySelectorAll('.tool-button').forEach((b) => b.classList.remove('active'));
+  updateHandOverlay();
+}
 
 const TOOL_CONFIG = {
   knife: { id: 'knife', sprite: 'knife', label: 'Нож', actions: ['chop'] },
@@ -186,12 +227,20 @@ document.querySelectorAll('.recipe-card').forEach(card => {
 });
 
 document.getElementById('backBtn').addEventListener('click', () => {
+  clearAllGameTimers();
+  flipFailTimer = null;
+  doneVictoryTimer = null;
+  resetToolsSelection();
   recipeScreen.style.display = 'block';
   kitchenView.classList.remove('active');
   kitchenView.style.display = 'none';
 });
 
 document.getElementById('playAgainBtn').addEventListener('click', () => {
+  clearAllGameTimers();
+  flipFailTimer = null;
+  doneVictoryTimer = null;
+  resetToolsSelection();
   victoryScreen.classList.remove('active');
   recipeScreen.style.display = 'block';
 });
@@ -199,8 +248,14 @@ document.getElementById('playAgainBtn').addEventListener('click', () => {
 renderToolPanel();
 
 function startRecipe(recipeId) {
+  clearAllGameTimers();
+  flipFailTimer = null;
+  doneVictoryTimer = null;
   currentRecipe = RECIPES[recipeId];
   currentStep = 0;
+  chopCount = 0;
+  stirCount = 0;
+  resetToolsSelection();
   recipeScreen.style.display = 'none';
   kitchenView.style.display = 'block';
   kitchenView.classList.add('active');
@@ -221,7 +276,8 @@ function renderStep() {
   minigameArea.innerHTML = '';
 
   if (step.type === 'done') {
-    setTimeout(() => showVictory(), 800);
+    clearGameTimer(doneVictoryTimer);
+    doneVictoryTimer = scheduleGame(() => showVictory(), 800);
     return;
   }
 
@@ -264,6 +320,7 @@ function renderChopMinigame(step) {
     </div>
   `;
 
+  const board = document.getElementById('cuttingBoard');
   const ingredient = document.getElementById('ingredient');
   const progressFill = document.getElementById('chopProgress');
 
@@ -271,7 +328,11 @@ function renderChopMinigame(step) {
   ingredient.innerHTML = wholeSprite ? spriteImg(wholeSprite, step.ingredient || '') : ingredientVisual(step);
 
   ingredient.addEventListener('click', () => {
-    if (!isToolValidFor('chop')) return;
+    if (chopCount >= chops) return;
+    if (!isToolValidFor('chop')) {
+      flashNeedTool();
+      return;
+    }
     chopCount++;
 
     // На первом корректном клике ножом показываем "резаную" версию
@@ -279,11 +340,16 @@ function renderChopMinigame(step) {
       ingredient.innerHTML = spriteImg(step.sprite, step.ingredient || '');
     }
 
+    board?.classList.remove('board-chop');
+    void board?.offsetWidth;
+    board?.classList.add('board-chop');
+
     const progress = Math.min((chopCount / chops) * 100, 100);
     progressFill.style.width = `${progress}%`;
     ingredient.style.transform = `translate(-50%, -50%) scale(${1 - Math.min(chopCount, chops) * 0.05})`;
     if (chopCount >= chops) {
-      setTimeout(() => nextStep(), 500);
+      ingredient.style.pointerEvents = 'none';
+      scheduleGame(() => nextStep(), 500);
     }
   });
 }
@@ -307,14 +373,22 @@ function renderMixMinigame(step) {
   const progressFill = document.getElementById('stirProgress');
 
   bowl.addEventListener('click', () => {
-    if (!isToolValidFor('mix')) return;
+    if (stirCount >= stirs) return;
+    if (!isToolValidFor('mix')) {
+      flashNeedTool();
+      return;
+    }
     stirCount++;
     progressFill.style.width = `${(stirCount / stirs) * 100}%`;
     const content = bowl.querySelector('.bowl-content');
     const direction = stirCount % 2 === 0 ? 1 : -1;
     content.style.transform = `translateX(-50%) scaleX(${direction})`;
+    bowl.classList.remove('bowl-stir');
+    void bowl.offsetWidth;
+    bowl.classList.add('bowl-stir');
     if (stirCount >= stirs) {
-      setTimeout(() => nextStep(), 400);
+      bowl.style.pointerEvents = 'none';
+      scheduleGame(() => nextStep(), 400);
     }
   });
 }
@@ -332,43 +406,120 @@ function renderPanMinigame(step) {
   `;
 
   const wait = (step.wait || 2) * 1000;
-  setTimeout(() => nextStep(), wait);
+  const panEl = minigameArea.querySelector('.pan');
+  panEl?.classList.add('pan-heating');
+  scheduleGame(() => {
+    panEl?.classList.remove('pan-heating');
+    nextStep();
+  }, wait);
 }
 
 function renderFlipMinigame(step) {
   flipReady = false;
+  clearGameTimer(flipFailTimer);
+  flipFailTimer = null;
+
+  const flipsNeeded = step.flips || 3;
+  let flipsDone = 0;
+
+  // Сырой омлет до финального переворота, затем показываем "готовый".
+  const rawSprite = step.sprite === 'omelet-cooked' ? 'omelet-raw' : step.sprite;
+  const rawMarkup = step.sprite ? spriteImg(rawSprite, step.ingredient || '') : '';
+  const cookedMarkup = step.sprite ? spriteImg(step.sprite, step.ingredient || '') : '';
+
   minigameArea.innerHTML = `
     <div class="pan-zone">
-      <div class="pan">
+      <div class="pan" id="flipPan">
         <div class="pan-food">
-          ${step.sprite ? spriteImg(step.sprite, step.ingredient || '') : ''}
+          <div class="omelet-food" id="omeletFood">
+            ${rawMarkup}
+          </div>
         </div>
+        ${spriteImg('sizzle-effect', 'Шипение')}
       </div>
-      <button class="flip-btn" id="flipBtn" disabled>Перевернуть!</button>
+      <button type="button" class="flip-btn" id="flipBtn" disabled>Перевернуть!</button>
     </div>
   `;
 
   const flipBtn = document.getElementById('flipBtn');
+  const flipPan = document.getElementById('flipPan');
+  const omeletFood = document.getElementById('omeletFood');
 
-  // Через 1.8 сек кнопка становится активной на 1.5 сек (удобнее на мобильном)
-  setTimeout(() => {
+  let flipInProgress = false;
+
+  function openFlipWindow() {
+    if (!flipBtn || !document.body.contains(flipBtn)) return;
+    if (flipsDone >= flipsNeeded) return;
+
+    flipInProgress = false;
     flipReady = true;
     flipBtn.disabled = false;
     flipBtn.textContent = 'Перевернуть СЕЙЧАС!';
-    flipTimeout = setTimeout(() => {
+    flipBtn.classList.add('flip-window-open');
+
+    clearGameTimer(flipFailTimer);
+    flipFailTimer = scheduleGame(() => {
       flipReady = false;
       flipBtn.disabled = true;
+      flipBtn.classList.remove('flip-window-open');
       flipBtn.textContent = 'Упустил момент! Попробуй снова...';
-      setTimeout(() => renderStep(), 1500);
+      flipFailTimer = null;
+      scheduleGame(() => renderStep(), 1500);
     }, 1500);
-  }, 1800);
+  }
 
-  flipBtn.addEventListener('click', () => {
-    if (!isToolValidFor('flip')) return;
-    if (flipReady) {
-      clearTimeout(flipTimeout);
-      flipBtn.textContent = 'Идеально! ✨';
-      setTimeout(() => nextStep(), 600);
+  function triggerOmeletFlip(isFinal) {
+    if (flipPan) {
+      flipPan.classList.remove('pan-flip-success');
+      void flipPan.offsetWidth; // restart animation
+      flipPan.classList.add('pan-flip-success');
+    }
+
+    if (!omeletFood) return;
+    omeletFood.classList.remove('omelet-flip-success');
+    void omeletFood.offsetWidth; // restart animation
+    omeletFood.classList.add('omelet-flip-success');
+
+    if (isFinal) {
+      scheduleGame(() => {
+        if (!minigameArea.contains(omeletFood)) return;
+        omeletFood.innerHTML = cookedMarkup;
+      }, 320);
+    } else {
+      // Оставляем омлет "сырым" до финального переворота.
+      // Спрайт не перерисовываем, чтобы анимация не моргала.
+    }
+  }
+
+  scheduleGame(() => openFlipWindow(), 1800);
+
+  flipBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!isToolValidFor('flip')) {
+      flashNeedTool();
+      return;
+    }
+    if (!flipReady || flipBtn.disabled || flipInProgress) return;
+
+    flipInProgress = true;
+    clearGameTimer(flipFailTimer);
+    flipFailTimer = null;
+
+    flipReady = false;
+    flipBtn.disabled = true;
+    flipBtn.classList.remove('flip-window-open');
+    flipBtn.textContent = 'Идеально! ✨';
+
+    flipsDone++;
+    const isFinal = flipsDone >= flipsNeeded;
+    triggerOmeletFlip(isFinal);
+
+    if (isFinal) {
+      scheduleGame(() => nextStep(), 680);
+    } else {
+      scheduleGame(() => openFlipWindow(), 900);
     }
   });
 }
@@ -384,12 +535,30 @@ function renderSpreadMinigame(step) {
           ${ingredientVisual(step)}
         </span>
       </div>
+      <div class="stir-progress spread-progress">
+        <div class="stir-progress-fill" id="spreadProgress"></div>
+      </div>
     </div>
   `;
 
-  document.getElementById('pizzaDough').addEventListener('click', () => {
+  const dough = document.getElementById('pizzaDough');
+  const spreadProgress = document.getElementById('spreadProgress');
+
+  dough.addEventListener('click', () => {
+    if (clicks >= needed) return;
+    if (!isToolValidFor('spread')) {
+      flashNeedTool();
+      return;
+    }
     clicks++;
-    if (clicks >= needed) nextStep();
+    spreadProgress.style.width = `${(clicks / needed) * 100}%`;
+    dough.classList.remove('dough-tap');
+    void dough.offsetWidth;
+    dough.classList.add('dough-tap');
+    if (clicks >= needed) {
+      dough.style.pointerEvents = 'none';
+      scheduleGame(() => nextStep(), 450);
+    }
   });
 }
 
@@ -404,7 +573,7 @@ function renderToppingsMinigame(step) {
         <div class="pizza-toppings" id="toppingsContainer"></div>
       </div>
       <div class="toppings-row">
-        ${toppings.map((t) => `<button class="add-topping-btn" data-topping="${t}">Добавить ${t}</button>`).join('')}
+        ${toppings.map((t) => `<button type="button" class="add-topping-btn" data-topping="${t}">+ ${TOPPING_LABELS[t] || t}</button>`).join('')}
       </div>
     </div>
   `;
@@ -413,17 +582,23 @@ function renderToppingsMinigame(step) {
 
   minigameArea.querySelectorAll('.add-topping-btn').forEach(btn => {
     btn.addEventListener('click', () => {
+      if (btn.disabled || added >= needed) return;
+      if (!isToolValidFor('toppings')) {
+        flashNeedTool();
+        return;
+      }
       const topping = btn.dataset.topping;
       const wrapper = document.createElement('span');
-      wrapper.className = 'topping';
-      wrapper.innerHTML = spriteImg(topping, topping);
-      wrapper.style.left = `${20 + Math.random() * 60}%`;
-      wrapper.style.top = `${20 + Math.random() * 60}%`;
+      wrapper.className = 'topping topping-pop';
+      wrapper.innerHTML = spriteImg(topping, TOPPING_LABELS[topping] || topping);
+      wrapper.style.left = `${22 + Math.random() * 56}%`;
+      wrapper.style.top = `${22 + Math.random() * 56}%`;
+      wrapper.style.setProperty('--t-rot', `${(Math.random() * 56 - 28).toFixed(1)}deg`);
       container.appendChild(wrapper);
       btn.disabled = true;
-      btn.style.opacity = '0.5';
+      btn.classList.add('topping-used');
       added++;
-      if (added >= needed) setTimeout(() => nextStep(), 500);
+      if (added >= needed) scheduleGame(() => nextStep(), 500);
     });
   });
 }
@@ -434,7 +609,11 @@ function nextStep() {
 }
 
 function showVictory() {
+  if (!currentRecipe) return;
+  clearGameTimer(doneVictoryTimer);
+  doneVictoryTimer = null;
   kitchenView.style.display = 'none';
+  kitchenView.classList.remove('active');
   victoryScreen.classList.add('active');
   victoryDish.innerHTML = spriteImg(currentRecipe.icon, currentRecipe.name);
 }
