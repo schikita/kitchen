@@ -50,7 +50,8 @@ const RECIPES = {
         instruction: 'Взбей яйца в миске! Нажимай на миску.',
         ingredient: 'Яичная смесь',
         sprite: 'egg-mixed',
-        stirs: 8
+        stirs: 8,
+        requiredTool: 'whisk'
       },
       {
         type: 'pan',
@@ -115,10 +116,11 @@ const RECIPES = {
       },
       {
         type: 'mix',
-        instruction: 'Смешай овощи в миске!',
+        instruction: 'Смешай овощи ложкой в миске!',
         ingredient: 'Салат',
         sprite: 'salad-mixed',
-        stirs: 6
+        stirs: 6,
+        requiredTool: 'spoon'
       },
       { type: 'done', instruction: 'Салат готов! Приятного аппетита! 🥗' }
     ]
@@ -155,6 +157,7 @@ function resetToolsSelection() {
 const TOOL_CONFIG = {
   knife: { id: 'knife', sprite: 'knife', label: 'Нож', actions: ['chop'] },
   whisk: { id: 'whisk', sprite: 'whisk', label: 'Венчик', actions: ['mix'] },
+  spoon: { id: 'spoon', sprite: 'spoon', label: 'Ложка', actions: ['mix'] },
   spatula: { id: 'spatula', sprite: 'spatula', label: 'Лопатка', actions: ['toppings', 'spread', 'pan', 'flip'] }
 };
 
@@ -175,6 +178,7 @@ function updateHandOverlay() {
   let spriteName = 'hand-empty';
   if (currentTool === 'knife') spriteName = 'hand-holding-knife';
   else if (currentTool === 'whisk') spriteName = 'hand-holding-whisk';
+  else if (currentTool === 'spoon') spriteName = 'hand-spoon';
   else if (currentTool === 'spatula') spriteName = 'hand-holding-spatula';
 
   handOverlay.innerHTML = spriteImg(spriteName, 'Рука повара');
@@ -188,12 +192,16 @@ function updateHandOverlay() {
 
 function renderToolPanel() {
   if (!toolPanel) return;
-  const tools = Object.values(TOOL_CONFIG);
+  // Порядок важен: чтобы в панели всегда был `spoon.png`.
+  const tools = ['knife', 'whisk', 'spoon', 'spatula']
+    .map((id) => TOOL_CONFIG[id])
+    .filter(Boolean);
+
   toolPanel.innerHTML = `
     <span class="tool-panel-label">Инструменты:</span>
     ${tools.map(tool => `
       <button class="tool-button" data-tool="${tool.id}" aria-label="${tool.label}">
-        ${spriteImg(tool.sprite, tool.label)}
+        ${tool.sprite ? `<img class="sprite sprite-${tool.sprite}" src="${SPRITES_BASE_PATH}${tool.sprite}.png" alt="${tool.label}" loading="eager">` : ''}
       </button>
     `).join('')}
   `;
@@ -357,6 +365,7 @@ function renderChopMinigame(step) {
 function renderMixMinigame(step) {
   stirCount = 0;
   const stirs = step.stirs || 6;
+  const requiredTool = step.requiredTool;
 
   minigameArea.innerHTML = `
     <div class="mixing-zone">
@@ -374,10 +383,17 @@ function renderMixMinigame(step) {
 
   bowl.addEventListener('click', () => {
     if (stirCount >= stirs) return;
-    if (!isToolValidFor('mix')) {
+
+    if (requiredTool) {
+      if (currentTool !== requiredTool) {
+        flashNeedTool();
+        return;
+      }
+    } else if (!isToolValidFor('mix')) {
       flashNeedTool();
       return;
     }
+
     stirCount++;
     progressFill.style.width = `${(stirCount / stirs) * 100}%`;
     const content = bowl.querySelector('.bowl-content');
@@ -386,6 +402,7 @@ function renderMixMinigame(step) {
     bowl.classList.remove('bowl-stir');
     void bowl.offsetWidth;
     bowl.classList.add('bowl-stir');
+
     if (stirCount >= stirs) {
       bowl.style.pointerEvents = 'none';
       scheduleGame(() => nextStep(), 400);

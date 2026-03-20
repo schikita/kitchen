@@ -1,77 +1,640 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Кухня шеф-повара — Мини-игра</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css">
-</head>
-<body>
-  <section class="game-section">
-    <div class="game-container">
-      <!-- Экран выбора рецепта -->
-      <div class="recipe-select-screen" id="recipeScreen">
-        <h1 class="game-title">🍳 Кухня шеф-повара</h1>
-        <p class="game-subtitle">Выбери блюдо и приготовь его шаг за шагом</p>
-        <div class="recipe-cards">
-          <div class="recipe-card" data-recipe="omelet">
-            <span class="icon">
-              <img class="sprite recipe-card-image" src="assets/sprites/card-omelet.png" alt="Омлет">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KitchenCraft — Кулинарная школа</title>
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <link rel="stylesheet" href="assets/css/sections.css" />
+  </head>
+  <body>
+    <!-- ===== HEADER ===== -->
+    <header class="site-header">
+      <div class="container">
+        <div class="header-inner">
+          <a
+            href="https://www.sb.by/"
+            class="nav__logo"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src="assets/img/logo.png"
+              alt="SB.BY"
+              class="nav__logo-img"
+              width="40"
+              height="40"
+            />
+            <span class="nav__logo-text">SB.BY</span>
+            <span class="nav__steam" aria-hidden="true">
+              <span class="nav__steam-line nav__steam-line--1"></span>
+              <span class="nav__steam-line nav__steam-line--2"></span>
+              <span class="nav__steam-line nav__steam-line--3"></span>
             </span>
-            <h3>Омлет</h3>
-            <p>Взбить яйца, жарить, перевернуть</p>
+          </a>
+          <nav class="header-nav" aria-label="Навигация">
+            <a href="#about" class="header-link">О школе</a>
+            <a href="#courses" class="header-link">Курсы</a>
+            <a href="#game-anchor" class="header-link">Игра</a>
+            <a href="#chefs" class="header-link">Шеф-повара</a>
+            <a href="#contact" class="header-link header-link--cta"
+              >Записаться</a
+            >
+          </nav>
+          <button class="burger" id="burgerBtn" aria-label="Меню">
+            <span></span><span></span><span></span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- ===== HERO ===== -->
+    <section class="hero" id="hero">
+      <div
+        class="hero-bg"
+        style="background-image: url(&quot;assets/img/heroBG.jpg&quot;)"
+      ></div>
+      <div class="hero-overlay"></div>
+      <div class="container">
+        <div class="hero-inner">
+          <div class="hero-copy animate-on-scroll">
+            <p class="hero-kicker">ЖИВОЙ РЕПОРТАЖ</p>
+            <h1 class="hero-title">
+              Шеф-повар Антон Каленик раскрыл секреты блюд, которыми угощал
+              Президента во время посещения
+              <span class="hero-title--accent">Mak.by</span>
+            </h1>
+            <p class="hero-subtitle">Бургер, но родной</p>
+            <div class="hero-actions">
+              <a href="#about" class="hero-cta">Читать материал</a>
+              <a href="#game-anchor" class="hero-cta hero-cta--ghost"
+                >Играть →</a
+              >
+            </div>
           </div>
-          <div class="recipe-card" data-recipe="pizza">
-            <span class="icon">
-              <img class="sprite recipe-card-image" src="assets/sprites/card-pizza.png" alt="Пицца">
-            </span>
-            <h3>Пицца</h3>
-            <p>Тесто, соус, начинка, выпечка</p>
-          </div>
-          <div class="recipe-card" data-recipe="salad">
-            <span class="icon">
-              <img class="sprite recipe-card-image" src="assets/sprites/card-salad.png" alt="Салат">
-            </span>
-            <h3>Салат</h3>
-            <p>Нарезать овощи, смешать</p>
+          <div
+            class="hero-visual animate-on-scroll"
+            style="animation-delay: 0.18s"
+          >
+            <img
+              src="assets/img/shief.jpg"
+              alt="Шеф на кухне"
+              class="hero-visual__img"
+            />
           </div>
         </div>
       </div>
-
-      <!-- Кухня — игровой процесс -->
-      <div class="kitchen-view" id="kitchenView">
-        <div class="kitchen-header">
-          <span class="recipe-name-display" id="recipeNameDisplay"></span>
-          <div class="step-indicator" id="stepIndicator"></div>
-          <button class="back-btn" id="backBtn">← Назад</button>
-        </div>
-        <div class="kitchen-workspace">
-          <div class="tool-panel" id="toolPanel"></div>
-          <p class="step-instruction" id="stepInstruction"></p>
-          <div class="minigame-area" id="minigameArea"></div>
-          <div class="hand-overlay" id="handOverlay"></div>
-        </div>
+      <div class="hero-scroll-hint">
+        <span>Листай вниз</span>
+        <div class="hero-scroll-arrow"></div>
       </div>
+    </section>
 
-      <!-- Экран победы -->
-      <div class="victory-screen" id="victoryScreen">
-        <div class="victory-emoji">⭐</div>
-        <h2 class="victory-title">Отлично приготовлено!</h2>
-        <div class="victory-stars">
-          <img src="assets/sprites/star-full.png" alt="Звезда" class="sprite">
-          <img src="assets/sprites/star-full.png" alt="Звезда" class="sprite">
-          <img src="assets/sprites/star-full.png" alt="Звезда" class="sprite">
-        </div>
-        <p>Ты настоящий шеф-повар!</p>
-        <div class="victory-dish" id="victoryDish"></div>
-        <button class="play-again-btn" id="playAgainBtn">Приготовить ещё</button>
+    <!-- ===== TICKER ===== -->
+    <div class="ticker-wrap">
+      <div class="ticker-track">
+        <span>🍕 Пицца</span><span>🍳 Омлет</span><span>🥗 Салаты</span>
+        <span>🥩 Стейки</span><span>🍰 Десерты</span><span>🍣 Суши</span>
+        <span>🥐 Выпечка</span><span>🍜 Паста</span><span>🫕 Супы</span>
+        <span>🍕 Пицца</span><span>🍳 Омлет</span><span>🥗 Салаты</span>
+        <span>🥩 Стейки</span><span>🍰 Десерты</span><span>🍣 Суши</span>
+        <span>🥐 Выпечка</span><span>🍜 Паста</span><span>🫕 Супы</span>
       </div>
     </div>
-  </section>
 
-  <script src="assets/js/game.js"></script>
-</body>
+    <!-- ===== ABOUT / PHILOSOPHY ===== -->
+    <section class="spring-section" id="about">
+      <div
+        class="spring-section__bg section__bg"
+        style="
+          background-image: url(&quot;https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=1400&auto=format&fit=crop&q=80&quot;);
+        "
+      ></div>
+      <div class="spring-section__overlay"></div>
+      <div class="container spring-section__inner">
+        <div class="spring-grid">
+          <div class="animate-on-scroll article-content">
+            <p class="spring-kicker">ЖИВОЙ РЕПОРТАЖ</p>
+            <h2 class="spring-title">
+              Шеф-повар Антон Каленик раскрыл секреты блюд, которыми угощал
+              Президента во время посещения Mak.by
+            </h2>
+            <p class="spring-text article-subtitle">
+              <strong>Бургер, но родной</strong>
+            </p>
+
+            <p class="spring-text">
+              Всегда удивляюсь — как один только вкус может перенести в детство,
+              в бабушкин дом, где пахнет парным молоком, а за окном
+              перекликаются петухи? Очень даже просто, если готовит шеф-повар
+              Антон Каленик, один из лучших поваров мира по версии World Master
+              Chefs Society и пока единственный обладатель этого титула в СНГ.
+              Он исколесил всю Беларусь, часами сидел на кухнях у деревенских
+              старожилов и собрал аутентичные рецепты яств, которым не одна
+              сотня лет. А совсем недавно этими блюдами он угощал Президента в
+              одном из ресторанов сети Mak.by в Минске.
+            </p>
+
+            <h3 class="article-section-title">На деревню к бабушке</h3>
+            <p class="spring-text">
+              Путь Антона в кулинарию начался на каникулах в деревне. Любопытный
+              шестилетка не мог понять, зачем бабушка поднимается так рано. В
+              один день не выдержал — попросил разбудить его. Сначала покормили
+              кур, потом свинок, натаскали воды из колодца, и бабушка стала
+              готовить обед. «Какой обед, если мы еще не завтракали?» — удивился
+              про себя Антон. Но вместе с бабушкой взялся готовить перловую кашу
+              с мясом: она колдовала над большим чугуном, внук — над маленьким.
+              Каждый шаг юный кулинар повторял: нарезать, посолить,
+              перемешать...
+            </p>
+            <p class="article-quote">
+              — Когда пришло время ставить чугунок в печь, я водворил свой в
+              самое пекло. Бабушка же промолчала, поставила свой горшок за угол.
+              Я был так горд, что тоже принимал участие. Достаю из печи горшок —
+              а там уголь, — вспоминает маэстро кулинарии.
+            </p>
+            <p class="spring-text">
+              Тогда и зародился азарт: сделать лучше, взять реванш у собственной
+              неудачи. Пока ребята мечтали стать космонавтами, пожарными и
+              милиционерами, Антон знал — будет поваром. Своего он добился: в
+              профессии уже почти тридцать лет. Вначале окончил ПТУ кулинарии,
+              потом оттачивал сноровку в кулинарных академиях Италии и Франции.
+            </p>
+
+            <h3 class="article-section-title">Не драниками едиными</h3>
+            <p class="spring-text">
+              Какое блюдо национальной кухни вам приходит на ум первым? Драники?
+              А ведь у нас сотни, а то и тысячи других рецептов, в том числе из
+              картошки. Возьмем, к примеру, цибрики, они же картофельные
+              пончики. В прошлом году Антон вернул это яство из небытия. Между
+              прочим, это первое блюдо из картошки, которое придумали белорусы.
+              Алгоритм такой: натирается сырой картофель, добавляются мука,
+              яйца, зелень и специи по вкусу, из теста лепятся шарики и жарятся
+              в масле — на сковороде или во фритюрнице. Просто, но с историей.
+            </p>
+            <p class="spring-text">
+              В поисках таких кулинарных раритетов наш герой колесит по стране с
+              2006 года. Общается с людьми из разных деревень — фермерами,
+              бабушками, выпытывает рецепты их семьи. Гастрономическое турне
+              объясняет так:
+            </p>
+            <p class="article-quote">
+              — Кухни других стран начали проникать в нашу. Сегодня белоруса не
+              удивишь ни суши, ни пиццей, ни карпаччо. Но наша кухня
+              аутентичная, через нее мы сохраняем традиции и культуру, передаем
+              их будущим поколениям.
+            </p>
+
+            <p class="spring-text">
+              В силу своего расположения Беларусь впитала кулинарные традиции
+              многих народов. Скажем, у Радзивиллов поварами служили
+              исключительно итальянцы. Так что в Мире или Несвиже можно отведать
+              «лазанку» — по сути лазанья, только готовят ее на блинах. А
+              знаменитым чизкейком «Сан-Себастьян» нас, оказывается, потчевали
+              еще в детском саду — называли запеканкой. Разница лишь в том, что
+              для модного десерта творог берут протертый.
+            </p>
+
+            <p class="spring-text">
+              На вопрос, какое путешествие запомнилось больше всего, Антон
+              отвечает с улыбкой — все:
+            </p>
+            <p class="article-quote">
+              — В любой уголок нашей страны приезжаешь и понимаешь: белорусы
+              невероятно интересные и открытые люди. Особенно люблю общаться с
+              бабушками, они не только рецептами делятся, но и жизненной
+              мудростью. Сначала готовим вместе, а потом я уже пробую в своем
+              исполнении. Всякий рецепт надо адаптировать под современное
+              оборудование и технологии, но так, чтобы не утратить тот самый
+              вкус.
+            </p>
+
+            <h3 class="article-section-title">Булочка всему голова</h3>
+            <p class="spring-text">
+              В сети ресторанов быстрого обслуживания Антон работает чуть больше
+              года, но за это время успел приложить руку ко многим позициям
+              меню. Одним из блюд, которым он угощал Президента, стал «Родной
+              бургер». Самой непростой задачей в его создании оказалась булочка.
+              Белый хлеб на белорусском столе появлялся только по праздникам, в
+              обычные дни — черный, серый или солодовый. На последнем варианте и
+              остановились.
+            </p>
+            <p class="article-quote">
+              — Этому рецепту уже триста лет. По всей стране он был почти
+              одинаковым, но уникальность достигалась за счет букета трав. В
+              нашем варианте — морковь, сушеные чеснок и зелень, кориандр,
+              базилик. Еще одно авторское решение — квашеная капуста в бургере.
+              Оценил Александр Лукашенко и хворост. Чтобы найти тот самый
+              рецепт, Антон собрал их больше 75 со всей страны. Победил способ
+              приготовления из Барановичей. Его секрет — капля алкоголя, который
+              добавляют в тесто. Кстати, по тому, как пекут хворост у вас дома,
+              можно определить, откуда вы родом: на севере он толстый и пышный,
+              а на юге — тонкий, почти как чипсы.
+            </p>
+
+            <h3 class="article-section-title">Пищевые подходы</h3>
+            <p class="spring-text">
+              Дома Антон тоже не расстается с фартуком. За двадцать один год
+              совместной жизни с супругой у него выработалась привычка каждое
+              утро готовить завтрак: жене и дочери Арине — одни вкусности, себе
+              и сыну Андрею — другие. А еще в семье существует традиция — лепить
+              пельмени. Это маленький праздник, когда вся семья собирается за
+              одним столом.
+            </p>
+            <p class="spring-text">
+              В работе Антона всегда есть место экспромту и вдохновению. Бывают
+              неудачи, вроде той самой перловой каши в детстве. А случается
+              наоборот: рецепт пошел не по плану, зато на столе появляется
+              что-то совершенно новое. У архитектора вкуса уже несколько книг
+              собственных рецептов, и каждый день он в поисках чего-то нового.
+              Сейчас шеф-повар предвкушает возможность пополнить копилку
+              рецептом драников, который ему пообещал Глава государства. И сам
+              втайне надеется, что найдет чем удивить Президента:
+            </p>
+            <p class="article-quote">
+              — С Александром Григорьевичем удивительно легко общаться, он очень
+              интересный собеседник. Для меня эта встреча стала стимулом не
+              останавливаться, создавать новое и двигаться вперед — показывать
+              всему миру нашу страну, в том числе через еду. Ведь наша кухня
+              отличается качеством и натуральностью продуктов, и это надо
+              сохранить.
+            </p>
+
+            <p class="spring-text article-author">Валерия КУРНЕВИЧ</p>
+          </div>
+          <div
+            class="spring-media__card animate-on-scroll"
+            style="animation-delay: 0.15s"
+          >
+            <div class="spring-media__badge">Автор и фото</div>
+            <div class="article-meta">
+              <div class="article-meta__row">
+                <div class="article-meta__label">Автор</div>
+                <div class="article-meta__value">Валерия КУРНЕВИЧ</div>
+              </div>
+              <div class="article-meta__row">
+                <div class="article-meta__label">Фото</div>
+                <div class="article-meta__value">Александр КУЛЕВСКИЙ</div>
+              </div>
+            </div>
+            <div class="article-meta-cta">
+              <a href="#projects" class="spring-link">Смотреть материалы →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== FEATURES ===== -->
+    <section class="spring-section features-section" id="features">
+      <div class="spring-section__overlay features-overlay"></div>
+      <div class="container spring-section__inner">
+        <div class="section-header animate-on-scroll">
+          <p class="spring-kicker">Почему мы</p>
+          <h2 class="section-title">
+            Всё, что нужно для<br />кулинарного мастерства
+          </h2>
+        </div>
+        <div class="spring-card-grid">
+          <div
+            class="spring-card animate-on-scroll"
+            style="animation-delay: 0.05s"
+          >
+            <div class="spring-card__icon">🔪</div>
+            <h3 class="spring-card__title">Профессиональные техники</h3>
+            <p class="spring-card__text">
+              Нарезка, жарка, су-вид, ферментация — осваивайте методы
+              шеф-поваров.
+            </p>
+          </div>
+          <div
+            class="spring-card animate-on-scroll"
+            style="animation-delay: 0.12s"
+          >
+            <div class="spring-card__icon">🧑‍🍳</div>
+            <h3 class="spring-card__title">Живые мастер-классы</h3>
+            <p class="spring-card__text">
+              Готовьте рядом с настоящими шефами в оборудованных учебных кухнях.
+            </p>
+          </div>
+          <div
+            class="spring-card animate-on-scroll"
+            style="animation-delay: 0.19s"
+          >
+            <div class="spring-card__icon">📱</div>
+            <h3 class="spring-card__title">Онлайн-доступ</h3>
+            <p class="spring-card__text">
+              Видеоуроки, рецепты и поддержка ментора в любое время суток.
+            </p>
+          </div>
+          <div
+            class="spring-card animate-on-scroll"
+            style="animation-delay: 0.26s"
+          >
+            <div class="spring-card__icon">🎓</div>
+            <h3 class="spring-card__title">Сертификат</h3>
+            <p class="spring-card__text">
+              По окончании курса вы получаете диплом KitchenCraft — признанный в
+              отрасли.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== COURSES / PROJECTS ===== -->
+    <section class="projects-section" id="courses">
+      <div
+        class="section__bg"
+        style="
+          background-image: url(&quot;https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1400&auto=format&fit=crop&q=80&quot;);
+        "
+      ></div>
+      <div class="projects-section__overlay"></div>
+      <div class="container projects-inner">
+        <div class="section-header animate-on-scroll">
+          <p class="spring-kicker">Курсы</p>
+          <h2 class="section-title">Популярные программы</h2>
+        </div>
+        <div class="projects-stage">
+          <article
+            class="project-card animate-on-scroll is-active"
+            style="animation-delay: 0.04s"
+          >
+            <img
+              src="https://images.unsplash.com/photo-1547592166-23ac45744acd?w=500&auto=format&fit=crop&q=80"
+              alt="Итальянская паста"
+            />
+            <div class="project-info">
+              <div class="project-tag">Базовый · 6 занятий</div>
+              <h3>Итальянская паста</h3>
+              <p>Тальятелле, карбонара, ньокки — классика от первого лица</p>
+            </div>
+          </article>
+          <article
+            class="project-card animate-on-scroll"
+            style="animation-delay: 0.12s"
+          >
+            <img
+              src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500&auto=format&fit=crop&q=80"
+              alt="Авторская пицца"
+            />
+            <div class="project-info">
+              <div class="project-tag">Средний · 4 занятия</div>
+              <h3>Авторская пицца</h3>
+              <p>Тесто на закваске, соусы, начинки и печь на дровах</p>
+            </div>
+          </article>
+          <article
+            class="project-card animate-on-scroll"
+            style="animation-delay: 0.2s"
+          >
+            <img
+              src="https://images.unsplash.com/photo-1512621776951-a57ef1d99e5e?w=500&auto=format&fit=crop&q=80"
+              alt="Свежие салаты"
+            />
+            <div class="project-info">
+              <div class="project-tag">Базовый · 3 занятия</div>
+              <h3>Свежие салаты</h3>
+              <p>Заправки, балансы вкусов и текстур, сезонные ингредиенты</p>
+            </div>
+          </article>
+        </div>
+        <div class="projects-footer animate-on-scroll">
+          <a href="#contact" class="btn-all-projects">Все программы →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== GAME ===== -->
+    <section class="spring-section game-outer" id="game-anchor">
+      <div class="spring-section__overlay game-outer-overlay"></div>
+      <div class="container spring-section__inner">
+        <div
+          class="section-header animate-on-scroll"
+          style="text-align: center; margin-bottom: 8px"
+        >
+          <p class="spring-kicker">Интерактив</p>
+          <h2 class="section-title">Попробуй приготовить сам!</h2>
+          <p class="spring-text" style="max-width: 54ch; margin: 8px auto 0">
+            Выбери рецепт и пройди мини-игру — почувствуй себя настоящим
+            шеф-поваром.
+          </p>
+        </div>
+        <div class="game-section">
+          <div class="game-container">
+            <!-- Выбор рецепта -->
+            <div id="recipeScreen" class="recipe-select-screen">
+              <h2 class="game-title">👨‍🍳 Что приготовим?</h2>
+              <p class="game-subtitle">Выбери рецепт и начинай готовить!</p>
+              <div class="recipe-cards">
+                <button
+                  class="recipe-card"
+                  data-recipe="omelet"
+                  aria-label="Приготовить омлет"
+                >
+                  <span class="icon"
+                    ><img
+                      src="assets/sprites/card-omelet.png"
+                      alt="Омлет"
+                      class="recipe-card-image"
+                  /></span>
+                  <h3>Омлет</h3>
+                  <p>Нарезай, взбивай, жарь!</p>
+                </button>
+                <button
+                  class="recipe-card"
+                  data-recipe="pizza"
+                  aria-label="Приготовить пиццу"
+                >
+                  <span class="icon"
+                    ><img
+                      src="assets/sprites/card-pizza.png"
+                      alt="Пицца"
+                      class="recipe-card-image"
+                  /></span>
+                  <h3>Пицца</h3>
+                  <p>Раскатывай и добавляй начинку!</p>
+                </button>
+                <button
+                  class="recipe-card"
+                  data-recipe="salad"
+                  aria-label="Приготовить салат"
+                >
+                  <span class="icon"
+                    ><img
+                      src="assets/sprites/card-salad.png"
+                      alt="Салат"
+                      class="recipe-card-image"
+                  /></span>
+                  <h3>Салат</h3>
+                  <p>Нарезай свежие овощи!</p>
+                </button>
+              </div>
+            </div>
+
+            <!-- Кухня -->
+            <div id="kitchenView" class="kitchen-view">
+              <div class="kitchen-header">
+                <span id="recipeNameDisplay" class="recipe-name-display"></span>
+                <div id="stepIndicator" class="step-indicator"></div>
+                <button
+                  id="backBtn"
+                  class="back-btn"
+                  aria-label="Назад к выбору рецепта"
+                >
+                  ← Назад
+                </button>
+              </div>
+              <div class="kitchen-workspace">
+                <!-- Панель инструментов -->
+                <div id="toolPanel" class="tool-panel">
+                  <span class="tool-panel-label">Инструменты:</span>
+                </div>
+                <!-- Инструкция шага -->
+                <p id="stepInstruction" class="step-instruction"></p>
+                <!-- Мини-игра -->
+                <div id="minigameArea" class="minigame-area"></div>
+                <!-- Рука-накладка -->
+                <div id="handOverlay" class="hand-overlay"></div>
+              </div>
+            </div>
+
+            <!-- Победа -->
+            <div id="victoryScreen" class="victory-screen">
+              <div class="victory-emoji">🎉</div>
+              <h2 class="victory-title">Блюдо готово!</h2>
+              <div id="victoryDish" class="victory-dish"></div>
+              <div class="victory-stars">
+                <img src="assets/sprites/star-full.png" alt="★" />
+                <img src="assets/sprites/star-full.png" alt="★" />
+                <img src="assets/sprites/star-full.png" alt="★" />
+              </div>
+              <p style="opacity: 0.85; margin: 8px 0 0">
+                Отличная работа, шеф!
+              </p>
+              <button id="playAgainBtn" class="play-again-btn">
+                🍳 Ещё раз
+              </button>
+            </div>
+          </div>
+          <!-- /game-container -->
+        </div>
+        <!-- /game-section -->
+      </div>
+    </section>
+
+    <!-- Секция: Живой репортаж — материалы -->
+    <section
+      class="projects-section"
+      id="projects"
+      aria-label="Живой репортаж — материалы"
+    >
+      <div
+        class="projects-section__bg section__bg"
+        data-bg="assets/img/last-bg.jpg"
+        aria-hidden="true"
+      ></div>
+      <div class="projects-section__overlay"></div>
+      <div class="projects-inner container">
+        <div class="section-header">
+          <h2 class="section-title">Живой репортаж — материалы</h2>
+        </div>
+
+        <div
+          class="projects-viewport"
+          data-autoplay="true"
+          data-interval="5000"
+        >
+          <div class="projects-stage">
+            <a
+              href="https://www.sb.by/sp/belaruskali/"
+              class="project-card"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                data-lazy-src="assets/img/projects/shahta.jpg"
+                loading="lazy"
+                alt="Спустимся в шахту"
+              />
+              <div class="project-info">
+                <h3>Спустимся в шахту</h3>
+              </div>
+            </a>
+
+            <a
+              href="https://www.sb.by/sp/kak-v-belarusi-vyrashhivayut-klubniku/"
+              class="project-card is-active"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                data-lazy-src="assets/img/projects/bg_game.jpg"
+                loading="lazy"
+                alt="Горнолыжный центр Силичи зимой"
+              />
+              <div class="project-info">
+                <h3>Как в Беларуси выращивают клубнику зимой?</h3>
+              </div>
+            </a>
+
+            <a
+              href="https://www.sb.by/sp/novogrudok/"
+              class="project-card"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                data-lazy-src="assets/img/projects/hero-bg.jpg"
+                loading="lazy"
+                alt="«Туманный Альбион» теперь не Лондон?"
+              />
+              <div class="project-info">
+                <h3>«Туманный Альбион» теперь не Лондон?</h3>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <div class="projects-footer">
+          <a
+            href="https://www.sb.by/articles/themes/spetsproekt-sb-nash-zhivoy-reportazh/"
+            class="btn-all-projects"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Смотреть все материалы
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="site-footer footer" role="contentinfo">
+      <div class="footer-content container">
+        <div class="footer-credits">
+          <p>Автор: <strong>Мария КРУШЕВСКАЯ</strong></p>
+          <p>Фото: <strong>Андрей ПРИМАЧЕК</strong></p>
+        </div>
+
+        <hr class="footer-divider" />
+
+        <div class="footer-copy">© Издательский дом «Беларусь сегодня»</div>
+      </div>
+    </footer>
+
+    <button
+      type="button"
+      class="back-to-top"
+      id="backToTop"
+      aria-label="Вернуться наверх страницы"
+    >
+      ↑
+    </button>
+
+    <!-- ===== SCRIPTS ===== -->
+    <script src="assets/js/game.js"></script>
+    <script src="assets/js/site.js"></script>
+  </body>
 </html>

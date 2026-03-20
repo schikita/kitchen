@@ -1,0 +1,722 @@
+/* =============================================
+   KitchenCraft — дополнительные секции
+   ============================================= */
+
+/* ---------- Типографика ---------- */
+body {
+  font-family: "Montserrat", Helvetica, Arial, sans-serif;
+}
+
+.hero-title--accent,
+.spring-metric__value,
+.cta-title {
+  background: linear-gradient(90deg, var(--accent-light), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ---------- Hero расширения ---------- */
+.hero {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.hero-visual__img {
+  width: 100%;
+  height: 100%;
+  min-height: 300px;
+  object-fit: cover;
+  display: block;
+  border-radius: 26px;
+  filter: brightness(0.88) saturate(1.1);
+  transition: transform 0.7s var(--springs-ease);
+}
+
+.hero-visual:hover .hero-visual__img {
+  transform: scale(1.03);
+}
+
+.hero-visual {
+  position: relative;
+  border-radius: 26px;
+  overflow: hidden;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.hero-cta--ghost {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.hero-cta--ghost:hover {
+  background: rgba(255, 255, 255, 0.14);
+  transform: translateY(-2px);
+}
+
+/* Плавающие бейджи на hero-изображении */
+.hero-badge {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(10, 14, 30, 0.78);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 14px;
+  padding: 10px 14px;
+  font-size: 0.85rem;
+  animation: badgeFloat 4s ease-in-out infinite;
+}
+
+.hero-badge strong {
+  display: block;
+  font-weight: 900;
+  font-size: 1.05rem;
+  color: var(--accent-light);
+}
+
+.hero-badge span {
+  opacity: 0.85;
+  font-size: 0.78rem;
+}
+
+.hero-badge__icon {
+  font-size: 1.4rem;
+}
+
+.hero-badge--rating {
+  bottom: 22px;
+  left: 18px;
+  animation-delay: 0s;
+}
+
+.hero-badge--students {
+  top: 22px;
+  right: 18px;
+  animation-delay: 2s;
+}
+
+@keyframes badgeFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/* Social proof */
+.hero-social-proof {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  opacity: 0.88;
+  font-size: 0.9rem;
+}
+
+.hero-avatars {
+  display: flex;
+}
+
+.hero-avatars img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  margin-right: -8px;
+  object-fit: cover;
+}
+
+.hero-scroll-hint {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  opacity: 0.6;
+  animation: fadeInUp 1s 1.4s both;
+}
+
+.hero-scroll-arrow {
+  width: 20px;
+  height: 20px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  animation: scrollBounce 1.4s ease infinite;
+}
+
+@keyframes scrollBounce {
+  0%,
+  100% {
+    transform: rotate(45deg) translate(0, 0);
+    opacity: 0.6;
+  }
+  60% {
+    transform: rotate(45deg) translate(4px, 4px);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(12px);
+  }
+  to {
+    opacity: 0.6;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* ---------- Ticker / бегущая строка ---------- */
+.ticker-wrap {
+  overflow: hidden;
+  background: linear-gradient(
+    90deg,
+    rgba(232, 93, 4, 0.12),
+    rgba(248, 140, 6, 0.08),
+    rgba(232, 93, 4, 0.12)
+  );
+  border-top: 1px solid rgba(248, 140, 6, 0.2);
+  border-bottom: 1px solid rgba(248, 140, 6, 0.2);
+  padding: 14px 0;
+}
+
+.ticker-track {
+  display: flex;
+  gap: 0;
+  white-space: nowrap;
+  animation: ticker 22s linear infinite;
+}
+
+.ticker-track span {
+  display: inline-block;
+  padding: 0 36px;
+  font-weight: 800;
+  font-size: 0.92rem;
+  letter-spacing: 0.06em;
+  opacity: 0.88;
+  position: relative;
+}
+
+.ticker-track span::after {
+  content: "·";
+  position: absolute;
+  right: 0;
+  opacity: 0.4;
+}
+
+@keyframes ticker {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ---------- Features section ---------- */
+.features-section {
+  background: transparent;
+}
+
+.features-overlay {
+  background:
+    radial-gradient(
+      circle at 80% 20%,
+      rgba(248, 140, 6, 0.14),
+      transparent 50%
+    ),
+    linear-gradient(180deg, rgba(10, 14, 30, 0.88), rgba(10, 14, 30, 0.97));
+}
+
+/* ---------- Courses / Projects расширения ---------- */
+.project-tag {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-light);
+  margin-bottom: 6px;
+  opacity: 0.9;
+}
+
+.project-info p {
+  font-size: 0.85rem;
+  opacity: 0.8;
+  margin-top: 4px;
+}
+
+/* ---------- Game section ---------- */
+.game-outer {
+  background: transparent;
+}
+
+.game-outer-overlay {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(248, 140, 6, 0.1), transparent 55%),
+    linear-gradient(180deg, rgba(10, 14, 30, 0.82), rgba(10, 14, 30, 0.97));
+}
+
+/* ---------- Chefs grid ---------- */
+.chefs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+
+.chef-card {
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  transition:
+    transform 0.4s var(--springs-ease),
+    border-color 0.4s var(--springs-ease),
+    box-shadow 0.4s var(--springs-ease);
+}
+
+.chef-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(248, 140, 6, 0.5);
+  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.45);
+}
+
+.chef-card__photo {
+  height: 220px;
+  overflow: hidden;
+}
+
+.chef-card__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  transition:
+    transform 0.6s var(--springs-ease),
+    filter 0.4s ease;
+  filter: brightness(0.9) saturate(1.05);
+}
+
+.chef-card:hover .chef-card__photo img {
+  transform: scale(1.06);
+  filter: brightness(1) saturate(1.1);
+}
+
+.chef-card__info {
+  padding: 18px 18px 22px;
+}
+
+.chef-card__info h3 {
+  font-weight: 900;
+  font-size: 1.1rem;
+  margin-bottom: 4px;
+}
+
+.chef-card__spec {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--accent-light);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.chef-card__info p {
+  font-size: 0.88rem;
+  opacity: 0.85;
+  line-height: 1.55;
+}
+
+/* ---------- Testimonials ---------- */
+.testimonials-section {
+  background: transparent;
+}
+
+.testimonials-overlay {
+  background:
+    radial-gradient(
+      circle at 20% 80%,
+      rgba(248, 140, 6, 0.12),
+      transparent 50%
+    ),
+    linear-gradient(180deg, rgba(10, 14, 30, 0.9), rgba(10, 14, 30, 0.98));
+}
+
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.testimonial {
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 24px 22px;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.2);
+  transition:
+    transform 0.4s var(--springs-ease),
+    border-color 0.4s var(--springs-ease);
+}
+
+.testimonial:hover {
+  transform: translateY(-4px);
+  border-color: rgba(248, 140, 6, 0.35);
+}
+
+.testimonial__stars {
+  font-size: 1rem;
+  margin-bottom: 14px;
+}
+
+.testimonial__text {
+  font-size: 0.95rem;
+  line-height: 1.65;
+  opacity: 0.9;
+  margin-bottom: 18px;
+  font-style: italic;
+}
+
+.testimonial__author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.testimonial__author img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(248, 140, 6, 0.4);
+}
+
+.testimonial__author strong {
+  display: block;
+  font-weight: 800;
+  font-size: 0.92rem;
+}
+
+.testimonial__author span {
+  font-size: 0.78rem;
+  opacity: 0.65;
+}
+
+/* ---------- CTA section ---------- */
+.cta-section {
+  text-align: center;
+}
+
+.cta-overlay {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(232, 93, 4, 0.35), transparent 65%),
+    linear-gradient(180deg, rgba(10, 14, 30, 0.55), rgba(10, 14, 30, 0.92));
+}
+
+.cta-inner {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.cta-title {
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  font-weight: 900;
+  line-height: 1.05;
+  margin-bottom: 20px;
+}
+
+.cta-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.cta-input {
+  padding: 16px 20px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--cream);
+  font-family: inherit;
+  font-size: 1rem;
+  outline: none;
+  transition:
+    border-color 0.3s,
+    background 0.3s;
+}
+
+.cta-input::placeholder {
+  opacity: 0.55;
+}
+
+.cta-input:focus {
+  border-color: rgba(248, 140, 6, 0.6);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.cta-submit {
+  padding: 16px 28px;
+  border-radius: 14px;
+  border: none;
+  background: linear-gradient(180deg, var(--accent-light), var(--accent));
+  color: #fff;
+  font-family: inherit;
+  font-size: 1.05rem;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 10px 28px rgba(232, 93, 4, 0.4);
+  transition:
+    transform 0.3s var(--springs-ease),
+    box-shadow 0.3s;
+}
+
+.cta-submit:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 16px 36px rgba(232, 93, 4, 0.5);
+}
+
+.cta-fine {
+  margin-top: 14px;
+  font-size: 0.75rem;
+  opacity: 0.45;
+}
+
+/* ---------- Footer расширения ---------- */
+.footer-top {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  flex-wrap: wrap;
+  width: 100%;
+  justify-content: space-between;
+  padding-bottom: 22px;
+}
+
+.footer-links {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.footer-links a {
+  color: rgba(255, 248, 231, 0.75);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: color 0.25s;
+}
+
+.footer-links a:hover {
+  color: var(--accent-light);
+}
+
+.footer-socials {
+  display: flex;
+  gap: 10px;
+}
+
+.social-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 248, 231, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background 0.25s,
+    color 0.25s,
+    transform 0.3s var(--springs-ease);
+}
+
+.social-btn:hover {
+  background: rgba(248, 140, 6, 0.2);
+  color: var(--accent-light);
+  transform: translateY(-2px);
+}
+
+/* ---------- Burger menu (mobile) ---------- */
+.burger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+}
+
+.burger span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--cream);
+  border-radius: 2px;
+  transition: all 0.3s;
+}
+
+.burger.open span:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+.burger.open span:nth-child(2) {
+  opacity: 0;
+}
+.burger.open span:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -5px);
+}
+
+/* ---------- CTA success toast ---------- */
+.toast {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: rgba(45, 106, 79, 0.9);
+  color: #fff;
+  padding: 14px 28px;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.35s,
+    transform 0.35s;
+  z-index: 200;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ---------- Scroll animations ---------- */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(22px);
+  filter: blur(6px);
+  transition:
+    opacity 0.7s var(--springs-ease),
+    transform 0.7s var(--springs-ease),
+    filter 0.7s var(--springs-ease);
+}
+
+.animate-on-scroll.is-in-view {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-on-scroll {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+  }
+  .ticker-track {
+    animation: none;
+  }
+  .hero-badge {
+    animation: none;
+  }
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+  .hero {
+    min-height: unset;
+    padding: 80px 0 60px;
+  }
+  .chefs-grid {
+    grid-template-columns: 1fr;
+  }
+  .testimonials-grid {
+    grid-template-columns: 1fr;
+  }
+  .hero-actions {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .footer-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+}
+
+@media (max-width: 640px) {
+  .burger {
+    display: flex;
+  }
+  .header-nav {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    right: 0;
+    background: rgba(10, 14, 30, 0.97);
+    backdrop-filter: blur(14px);
+    flex-direction: column;
+    gap: 0;
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    transform: translateY(-120%);
+    transition: transform 0.4s var(--springs-ease);
+    z-index: 40;
+  }
+  .header-nav.open {
+    transform: translateY(0);
+  }
+  .header-link {
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 14px 20px;
+    background: none;
+  }
+  .hero-inner {
+    grid-template-columns: 1fr;
+  }
+  .hero-visual {
+    display: none;
+  }
+  .spring-card-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .cta-form {
+    max-width: 100%;
+  }
+  .hero-social-proof {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .spring-card-grid {
+    grid-template-columns: 1fr;
+  }
+}
